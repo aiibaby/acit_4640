@@ -1,7 +1,7 @@
 #!/bin/bash -x
 
 vbmg () { VBoxManage.exe "$@"; }
-VM_NAME="VM_ACIT4640"
+VM_NAME="VM_ACIT4640_test"
 remove_old_staff() {
 	echo "Remove Old Staff"
 	vbmg natnetwork remove --netname "net_4640"  > /dev/null 2>&1
@@ -26,6 +26,7 @@ configue_vm(){
 	VM_DIR=$(dirname "$VBOX_FILE")
 	vbmg createmedium disk --filename "$VM_DIR/$VM_NAME.vdi" --size 10240 --format VDI
 	vbmg storageattach $VM_NAME --storagectl SATA --port 0 --device 0 --type hdd --medium "$VM_DIR/$VM_NAME.vdi"
+	vbmg storageattach $VM_NAME --storagectl SATA --port 1 --device 0 --type dvddrive --medium emptydrive
 }
 
 remove_old_staff

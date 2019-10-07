@@ -19,6 +19,7 @@ firewall-cmd --zone=public --add-service=http
 firewall-cmd --zone=public --add-service=ssh
 firewall-cmd --zone=public --add-service=https
 firewall-cmd --runtime-to-permanent
+setenforce 0
 sed -r -i 's/SELINUX=(enforcing|disabled)/SELINUX=permissive/' /etc/selinux/config
 }
 
@@ -39,7 +40,7 @@ cd /home/todo-app/app
 echo y | yum install nginx
 
 sed -i 's/\/usr\/share\/nginx\/html/\/home\/todo-app\/app\/public/g' /etc/nginx/nginx.conf
-sed -i 's/server { \{0,1\}$/server { index index.html; location \/api\/todos { proxy_pass http:\/\/localhost:8080; }/' /etc/nginx/nginx.conf
+sed -i 's/server { \{0,1\}$/server { index index.html; location \/api\/todos { proxy_pass http:\/\/localhost:8080; }/' /etc/nginx/nginx.conf;
 systemctl enable nginx
 systemctl start nginx
 yum install jq -y
@@ -70,7 +71,6 @@ echo Check todoapp status
 systemctl status todoapp
 cd /home/todo-app/app
 chmod 755 -R /home/todo-app
-setsebool httpd_read_user_content 1
 }
 
 additional_user
