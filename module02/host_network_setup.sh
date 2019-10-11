@@ -18,7 +18,7 @@ setup_network(){
 configue_vm(){
 	echo "Setup VMs"
 	vbmg createvm --name $VM_NAME --ostype RedHat_64 --register
-	vbmg modifyvm $VM_NAME --cpus 1 --memory 1024 --nic1 natnetwork --nat-network1 "net_4640"
+	vbmg modifyvm $VM_NAME --cpus 1 --memory 1500 --nic1 natnetwork --nat-network1 "net_4640"
 	vbmg storagectl $VM_NAME --name SATA --add sata
 
 	SED_PROGRAM="/^Config file:/ { s/^.*:\s\+\(\S\+\)/\1/; s|\\\\|/|gp }"
