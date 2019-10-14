@@ -1,6 +1,6 @@
 #!/bin/bash -x
 
-vbmg () { VBoxManage.exe "$@"; }
+vbmg () { /mnt/c/Program\ Files/Oracle/VirtualBox/VBoxManage.exe "$@"; }
 VM_NAME="VM_4640"
 remove_old_staff() {
         echo "Remove Old Staff"
