@@ -20,7 +20,7 @@
     become: yes
     package:
      name: nginx
-     state: installed
+     state: present
   - name: Copy nginx file
     become: yes
     copy:
@@ -53,6 +53,9 @@
      service: http
      permanent: yes
      state: enabled
+  - name: disabling selinux
+    become: yes
+    command: setenforce 0
   - name: Disable SELinux
     become: yes
     selinux:
@@ -66,17 +69,17 @@
     become: yes
     package:
      name: nodejs
-     state: installed
+     state: present
   - name: Install mongodb server
     become: yes
     package:
      name: mongodb-server
-     state: installed
+     state: present
   - name: Install git
     become: yes
     package:
      name: git
-     state: installed
+     state: present
   - name: ansible create directory home/todoapp/app
     become: yes
     file:
