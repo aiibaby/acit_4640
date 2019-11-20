@@ -1,0 +1,7 @@
+---
+- hosts: todoapp
+  roles:
+   - role: base
+   - role: todoapp
+   
+  

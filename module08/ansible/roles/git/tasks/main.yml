@@ -1,0 +1,34 @@
+---
+ - name: Install git
+   become: yes
+   package:
+     name: git
+     state: present
+ - name: Add the user 'todoapp'
+   become: yes
+   user:
+     name: todoapp
+     create_home: yes
+ - name: ansible create directory home/todoapp/app
+   become: yes
+   file:
+     path: /home/todoapp/app
+     state: directory
+ - name: Recursively change ownership of todoapp directory
+   become: yes
+   file:
+     path: /home/todoapp
+     state: directory
+     recurse: yes
+     owner: admin
+     group: admin
+     mode: '0755'
+ - git:
+    repo: https://github.com/timoguic/ACIT4640-todo-app.git
+    dest: /home/todoapp/app
+
+ - name: Copy todoapp.service
+   become: yes
+   copy:
+     src: ../files/todoapp.service
+     dest: /lib/systemd/system/todoapp.service
