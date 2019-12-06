@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  connection: local
+  vars:
+    secgroup_ssh_allowed_instructor_cidr: '20.21.22.23/32'
+  roles:
+   - role: aws
+   
+  

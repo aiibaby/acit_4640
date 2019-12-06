@@ -1,0 +1,30 @@
+---
+- hosts: localhost
+  connection: local
+  vars:
+    secgroup_ssh_allowed_instructor_cidr: '20.21.22.23/32'
+  roles:
+   - role: aws
+     tags:
+     - provision
+   - role: checkinfo
+     tags: [ info, never ]
+   - role: cleanup
+     tags: [ cleanup, never]
+
+  tasks:
+  - name: refresh Ansible inventory
+    meta: refresh_inventory
+
+- hosts: aws_ec2
+  gather_facts: no   
+  roles:
+   - role: base
+     tags:
+     - deployment
+   - role: todoapp
+     tags:
+     - deployment
+   - role: checkstatus
+     tags: [ info, never ]
+   

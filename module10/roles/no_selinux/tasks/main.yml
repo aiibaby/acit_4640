@@ -1,0 +1,8 @@
+---
+ - name: disabling selinux
+   become: yes
+   command: setenforce 0
+ - name: Disable SELinux
+   become: yes
+   selinux:
+    state: disabled

@@ -1,0 +1,12 @@
+---
+- ec2_instance_facts:
+    region: 'us-west-2'
+    filters:
+     "tag:Name": "{{ vpc_prefix }}_APP"
+     instance-state-name: "running"
+  register: ec2
+
+- name: Show the public IP address of the instance
+  debug:
+    msg: "The public IP address of this instance is {{ec2.instances[0].public_ip_address}}"
+

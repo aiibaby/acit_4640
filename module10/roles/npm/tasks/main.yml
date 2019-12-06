@@ -1,0 +1,4 @@
+---
+ - name: Install packages
+   npm:
+     path: /home/todoapp/app

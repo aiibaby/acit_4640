@@ -1,0 +1,67 @@
+---
+  - name: Provision the VPC
+    ec2_vpc_net:
+      state: present
+      cidr_block: "{{ vpc_cidr }}"
+      region: "{{ aws_region }}"
+      multi_ok: no
+      name: "{{ vpc_prefix }}_VPC"
+    register: vpc_data
+  - name: Create a subnet in the VPC
+    ec2_vpc_subnet:
+      state: present
+      region: "{{ aws_region }}" 
+      az: "{{ aws_az }}"
+      cidr: "{{ vpc_subnet_cidr }}"
+      vpc_id: "{{ vpc_data.vpc.id }}"
+      tags:
+        Name: "{{ vpc_prefix }}_subnet"
+    register: subnet_data
+  - name: Create an Internet gateway
+    ec2_vpc_igw:
+      vpc_id: "{{ vpc_data.vpc.id }}"
+      state: present
+      region: "{{ aws_region }}"
+      tags: 
+        Name: "{{ vpc_prefix }}_gw"
+    register: gw_data
+  - name: create ec2 VPC public subnet route table
+    ec2_vpc_route_table:
+      vpc_id: "{{ vpc_data.vpc.id }}"
+      region: "{{ aws_region }}"
+      state: present
+      tags:
+        Name: "{{ vpc_prefix }}_ribl"
+      subnets: [ "{{ subnet_data.subnet.id }}" ]     
+      # create routes
+      routes:
+        - dest: "{{ destinationCidrBlock }}" 
+          gateway_id: "{{ gw_data.gateway_id }}"
+    register: route_table
+  - name: create ec2 security group
+    # create a security group for the vpc
+    ec2_group:
+      vpc_id: "{{ vpc_data.vpc.id }}"
+      region: "{{ aws_region }}"
+      state: present
+      name: "{{ vpc_prefix }}_SecGroup"
+      description: "{{ vpc_prefix }}_SecGroup"
+      tags:
+        Name: "{{ vpc_prefix }}_SecGroup"
+      rules:
+      - proto: tcp
+        ports:
+        - 22
+        cidr_ip: "{{ port22CidrBlock }}"
+        rule_desc: only allow SSH access to your VPC from BCIT 
+      - proto: tcp
+        ports:
+        - 22
+        cidr_ip: "{{ secgroup_ssh_allowed_instructor_cidr }}"
+        rule_desc: only allow SSH access to your VPC from Tim 
+      - proto: tcp
+        ports:
+        - 80
+        cidr_ip: "{{ destinationCidrBlock }}"
+        rule_desc: the whole Internet can access the website
+    register: security_group_results

@@ -1,0 +1,39 @@
+---
+  - name: Launch instance
+    ec2:
+        key_name: "{{ keypair }}"
+        group: ["{{ vpc_prefix }}_SecGroup"]
+        instance_type: "{{ instance_type }}"
+        image: "ami-01ed306a12b7d1c96"
+        wait: true
+        instance_tags:
+         Name: "{{ vpc_prefix }}_APP"
+        region: "{{ aws_region }}"
+        exact_count: 1
+        count_tag: "{{ vpc_prefix }}_APP"
+        vpc_subnet_id: "{{ subnet_data.subnet.id }}"
+        volumes:
+         - device_name: /dev/sdb
+           volume_type: gp2
+           volume_size: 8
+        assign_public_ip: yes
+    register: ec2
+  - name: allocate a new elastic IP inside a VPC in us-west-2
+    ec2_eip:
+      region: "{{ aws_region }}"
+      in_vpc: yes
+      reuse_existing_ip_allowed: yes
+      release_on_disassociation: yes
+      device_id: "{{ ec2.instance_ids[0]}}"
+    register: eip
+  - name: display instance IP
+    debug:
+     msg: "The public IP of this instacne is {{eip.public_ip}}."
+  - name: Wait for the instances to boot by checking the ssh port
+    wait_for: 
+      host: "{{eip.public_ip}} "
+      port: 22 
+      delay: 15 
+      timeout: 300 
+      state: started
+

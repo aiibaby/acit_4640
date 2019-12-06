@@ -1,0 +1,71 @@
+---
+- ec2_instance_facts:
+    region: "{{aws_region}}"
+    filters:
+     "tag:Name": "{{ vpc_prefix }}_APP"
+     instance-state-name: "running"
+  register: ec2
+
+- ec2_group_facts:
+    region: "{{aws_region}}"
+    filters:
+     group_name: "{{ vpc_prefix }}_SecGroup"
+  register: secgroup_info
+- ec2_vpc_route_table_facts:
+    region: "{{aws_region}}"
+    filters:
+     "tag:Name": "{{vpc_prefix}}_ribl"
+  register: ribl_info
+- ec2_vpc_igw_facts:
+    region: "{{aws_region}}"
+    filters:
+     "tag:Name": "{{vpc_prefix}}_gw"
+  register: gw
+- ec2_vpc_net_facts:
+    region: "{{aws_region}}"
+    filters:
+     "tag:Name": "{{vpc_prefix}}_VPC"
+  register: vpc
+
+- name: Release the elastic IP
+  ec2_eip:
+    device_id: "{{ec2.instances[0].instance_id}}"
+    ip: "{{ec2.instances[0].public_ip_address}}"
+    region: "{{aws_region}}"
+    state: absent
+    release_on_disassociation: yes
+- name: Delete instance
+  ec2:
+    state: "absent"
+    instance_ids: "{{ec2.instances[0].instance_id}}"
+    wait: yes
+    region: "{{aws_region}}"
+- name: Delete ec2 security group
+  ec2_group:
+    region: "{{aws_region}}"
+    group_id: "{{secgroup_info.security_groups[0].group_id}}"
+    state: absent
+- name: Delete ec2 route table
+  ec2_vpc_route_table:
+    region: "{{aws_region}}"
+    route_table_id: "{{ribl_info.route_tables[0].id}}"
+    lookup: id
+    state: absent
+- name: Delete gateway
+  ec2_vpc_igw:
+    vpc_id: "{{gw.internet_gateways[0].attachments[0].vpc_id}}"
+    region: "{{aws_region}}"
+    state: absent
+- name: Delete subnet
+  ec2_vpc_subnet:
+    region: "{{aws_region}}"
+    cidr: "{{vpc_subnet_cidr}}"
+    vpc_id: "{{vpc.vpcs[0].vpc_id}}"
+    wait: yes
+    state: absent
+- name: Delete VPC
+  ec2_vpc_net:
+    region: "{{aws_region}}"
+    name: "{{ vpc_prefix }}_VPC"
+    cidr_block: "{{vpc.vpcs[0].cidr_block}}"
+    state: absent

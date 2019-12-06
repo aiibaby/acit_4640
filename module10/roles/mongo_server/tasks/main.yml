@@ -1,0 +1,11 @@
+---
+ - name: Install mongodb server
+   become: yes
+   package:
+     name: mongodb-server
+     state: present
+ - name: move database.conf
+   become: yes
+   template:
+     src: ../templates/database.j2
+     dest: /home/todoapp/app/config/database.js

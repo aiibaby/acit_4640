@@ -1,0 +1,4 @@
+---
+ root_dir: '/home/todoapp/app/public'
+ http_port: 8080
+ nignx_hostname: 'localhost'

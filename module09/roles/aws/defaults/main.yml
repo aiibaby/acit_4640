@@ -1,0 +1,10 @@
+---
+ vpc_cidr: '10.46.0.0/16'
+ aws_region: 'us-west-2'
+ vpc_prefix: 'ACIT4640'
+ vpc_subnet_cidr: '10.46.10.0/24'
+ aws_az: 'us-west-2a'
+ destinationCidrBlock: '0.0.0.0/0'
+ port22CidrBlock: '142.232.0.0/16'
+ keypair: 'ineedkey'
+ instance_type: 't2.micro'

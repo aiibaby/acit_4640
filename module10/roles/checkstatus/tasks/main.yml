@@ -1,0 +1,13 @@
+---
+- name: collect facts about system services
+  service_facts:
+  register: services_state
+- name: Show the status of MongoDB
+  debug:
+    msg: '{{services_state.ansible_facts.services["mongod.service"]}}'
+- name: Show the status of Nginx
+  debug:
+    msg: '{{services_state.ansible_facts.services["nginx.service"]}}'
+- name: Show the status of Todo App service
+  debug:
+    msg: '{{services_state.ansible_facts.services["todoapp.service"]}}'
