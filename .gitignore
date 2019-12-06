@@ -12,6 +12,9 @@ desktop.ini
 /module08/.vagrant/
 /module08/isos/
 /module08/ansible_4640.box
-
+/module09/aws_acess_keys
+/module09/aws_private_key
+/module10/aws_acess_keys
+/module10/aws_private_key
 
 
